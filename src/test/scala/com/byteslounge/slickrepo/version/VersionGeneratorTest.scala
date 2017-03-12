@@ -34,7 +34,7 @@ class VersionGeneratorTest extends FlatSpec with Matchers with BeforeAndAfter {
   before {
     MockDateTimeHelper.start()
     MockDateTimeHelper.mock(
-      Instant.parse("2016-01-03T01:01:02.776Z")
+      Instant.parse("2016-01-03T01:01:02Z")
     )
   }
 
@@ -55,11 +55,11 @@ class VersionGeneratorTest extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   "The Instant Version Generator" should "generate the instant initial value" in {
-    VersionGenerator.instantVersionGenerator.initialVersion() should equal(InstantVersion(Instant.parse("2016-01-03T01:01:02.776Z")))
+    VersionGenerator.instantVersionGenerator.initialVersion() should equal(InstantVersion(Instant.parse("2016-01-03T01:01:02Z")))
   }
 
   it should "generate the next instant value" in {
-    VersionGenerator.instantVersionGenerator.nextVersion(InstantVersion(Instant.parse("2016-01-01T01:00:02.112Z"))) should equal(InstantVersion(Instant.parse("2016-01-03T01:01:02.776Z")))
+    VersionGenerator.instantVersionGenerator.nextVersion(InstantVersion(Instant.parse("2016-01-01T01:00:02.112Z"))) should equal(InstantVersion(Instant.parse("2016-01-03T01:01:02Z")))
   }
 
 }

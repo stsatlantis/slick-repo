@@ -35,29 +35,29 @@ abstract class JodaTimeVersionedRepositoryTest(override val config: Config) exte
   override def prepareTest() {
     MockDateTimeHelper.start()
     MockDateTimeHelper.mock(
-      Instant.parse("2016-01-03T01:01:02.987Z"),
-      Instant.parse("2016-01-04T01:01:05.654Z"),
-      Instant.parse("2016-01-05T01:01:07.321Z")
+      Instant.parse("2016-01-03T01:01:02Z"),
+      Instant.parse("2016-01-04T01:01:05Z"),
+      Instant.parse("2016-01-05T01:01:07Z")
     )
   }
 
   "The Joda Time Versioned Repository" should "save an entity (manual pk) with an initial JodaTime Instant version field value" in {
     import scala.concurrent.ExecutionContext.Implicits.global
     val entity: TestJodaTimeVersionedEntity = executeAction(testJodaTimeVersionedEntityRepository.save(TestJodaTimeVersionedEntity(Option(1), 2, None)))
-    entity.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02.987Z"))
+    entity.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02Z"))
     val readEntity = executeAction(testJodaTimeVersionedEntityRepository.findOne(entity.id.get)).get
-    readEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02.987Z"))
+    readEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02Z"))
   }
 
   it should "update an entity (manual pk) incrementing the Joda Time Instant version field value" in {
     import scala.concurrent.ExecutionContext.Implicits.global
     val entity: TestJodaTimeVersionedEntity = executeAction(testJodaTimeVersionedEntityRepository.save(TestJodaTimeVersionedEntity(Option(1), 2, None)))
     val readEntity = executeAction(testJodaTimeVersionedEntityRepository.findOne(entity.id.get)).get
-    readEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02.987Z"))
+    readEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02Z"))
     val updatedEntity = executeAction(testJodaTimeVersionedEntityRepository.update(readEntity.copy(price = 3)))
-    updatedEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-04T01:01:05.654Z"))
+    updatedEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-04T01:01:05Z"))
     val readUpdatedEntity = executeAction(testJodaTimeVersionedEntityRepository.findOne(entity.id.get)).get
-    readUpdatedEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-04T01:01:05.654Z"))
+    readUpdatedEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-04T01:01:05Z"))
   }
 
   it should "updating a Joda Time Instant versioned entity (manual pk) that was meanwhile updated by other process throws exception" in {
@@ -66,14 +66,14 @@ abstract class JodaTimeVersionedRepositoryTest(override val config: Config) exte
       import scala.concurrent.ExecutionContext.Implicits.global
       val entity: TestJodaTimeVersionedEntity = executeAction(testJodaTimeVersionedEntityRepository.save(TestJodaTimeVersionedEntity(Option(1), 2, None)))
       val readEntity = executeAction(testJodaTimeVersionedEntityRepository.findOne(entity.id.get)).get
-      readEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02.987Z"))
+      readEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02Z"))
 
       val updatedEntity = executeAction(testJodaTimeVersionedEntityRepository.update(readEntity.copy(price = 3)))
-      updatedEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-04T01:01:05.654Z"))
+      updatedEntity.version.get should equal(org.joda.time.Instant.parse("2016-01-04T01:01:05Z"))
 
       executeAction(testJodaTimeVersionedEntityRepository.update(readEntity.copy(price = 4)))
     }
-    exception.getMessage should equal("Failed to update entity of type com.byteslounge.slickrepo.repository.TestJodaTimeVersionedEntity. Expected version was not found: 2016-01-03T01:01:02.987Z")
+    exception.getMessage should equal("Failed to update entity of type com.byteslounge.slickrepo.repository.TestJodaTimeVersionedEntity. Expected version was not found: 2016-01-03T01:01:02.000Z")
   }
 
   it should "perform a batch insert of joda time versioned entities" in {
@@ -88,10 +88,10 @@ abstract class JodaTimeVersionedRepositoryTest(override val config: Config) exte
     val entity2: TestJodaTimeVersionedEntity = executeAction(testJodaTimeVersionedEntityRepository.findOne(2)).get
     val entity3: TestJodaTimeVersionedEntity = executeAction(testJodaTimeVersionedEntityRepository.findOne(3)).get
     entity1.price should equal(2.2)
-    entity1.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02.987Z"))
+    entity1.version.get should equal(org.joda.time.Instant.parse("2016-01-03T01:01:02Z"))
     entity2.price should equal(3.3)
-    entity2.version.get should equal(org.joda.time.Instant.parse("2016-01-04T01:01:05.654Z"))
+    entity2.version.get should equal(org.joda.time.Instant.parse("2016-01-04T01:01:05Z"))
     entity3.price should equal(4.4)
-    entity3.version.get should equal(org.joda.time.Instant.parse("2016-01-05T01:01:07.321Z"))
+    entity3.version.get should equal(org.joda.time.Instant.parse("2016-01-05T01:01:07Z"))
   }
 }
