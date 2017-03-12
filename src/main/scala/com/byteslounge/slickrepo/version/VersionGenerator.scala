@@ -65,9 +65,9 @@ object VersionGenerator {
     override def nextVersion(currentVersion: Long): Long = currentVersion + 1
   }
 
-  implicit val instantVersionGenerator = new VersionGenerator[Instant]{
-    override def initialVersion(): Instant = currentInstant()
-    override def nextVersion(currentVersion: Instant): Instant = currentInstant()
+  implicit val instantVersionGenerator = new VersionGenerator[InstantVersion]{
+    override def initialVersion(): InstantVersion = InstantVersion(currentInstant())
+    override def nextVersion(currentVersion: InstantVersion): InstantVersion = InstantVersion(currentInstant())
   }
 
   /**

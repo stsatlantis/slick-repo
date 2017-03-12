@@ -35,29 +35,29 @@ abstract class InstantVersionedRepositoryTest(override val config: Config) exten
   override def prepareTest() {
     MockDateTimeHelper.start()
     MockDateTimeHelper.mock(
-      Instant.parse("2016-01-03T01:01:02Z"),
-      Instant.parse("2016-01-04T01:01:05Z"),
-      Instant.parse("2016-01-05T01:01:07Z")
+      Instant.parse("2016-01-03T01:01:02.123Z"),
+      Instant.parse("2016-01-04T01:01:05.456Z"),
+      Instant.parse("2016-01-05T01:01:07.789Z")
     )
   }
 
   "The Instant Versioned Repository" should "save an entity (manual pk) with an initial Instant version field value" in {
     import scala.concurrent.ExecutionContext.Implicits.global
     val entity: TestInstantVersionedEntity = executeAction(testInstantVersionedEntityRepository.save(TestInstantVersionedEntity(Option(1), 2, None)))
-    entity.version.get should equal(Instant.parse("2016-01-03T01:01:02Z"))
+    entity.version.get.instant should equal(Instant.parse("2016-01-03T01:01:02.123Z"))
     val readEntity = executeAction(testInstantVersionedEntityRepository.findOne(entity.id.get)).get
-    readEntity.version.get should equal(Instant.parse("2016-01-03T01:01:02Z"))
+    readEntity.version.get.instant should equal(Instant.parse("2016-01-03T01:01:02.123Z"))
   }
 
   it should "update an entity (manual pk) incrementing the Instant version field value" in {
     import scala.concurrent.ExecutionContext.Implicits.global
     val entity: TestInstantVersionedEntity = executeAction(testInstantVersionedEntityRepository.save(TestInstantVersionedEntity(Option(1), 2, None)))
     val readEntity = executeAction(testInstantVersionedEntityRepository.findOne(entity.id.get)).get
-    readEntity.version.get should equal(Instant.parse("2016-01-03T01:01:02Z"))
+    readEntity.version.get.instant should equal(Instant.parse("2016-01-03T01:01:02.123Z"))
     val updatedEntity = executeAction(testInstantVersionedEntityRepository.update(readEntity.copy(price = 3)))
-    updatedEntity.version.get should equal(Instant.parse("2016-01-04T01:01:05Z"))
+    updatedEntity.version.get.instant should equal(Instant.parse("2016-01-04T01:01:05.456Z"))
     val readUpdatedEntity = executeAction(testInstantVersionedEntityRepository.findOne(entity.id.get)).get
-    readUpdatedEntity.version.get should equal(Instant.parse("2016-01-04T01:01:05Z"))
+    readUpdatedEntity.version.get.instant should equal(Instant.parse("2016-01-04T01:01:05.456Z"))
   }
 
   it should "updating an Instant versioned entity (manual pk) that was meanwhile updated by other process throws exception" in {
@@ -66,14 +66,14 @@ abstract class InstantVersionedRepositoryTest(override val config: Config) exten
       import scala.concurrent.ExecutionContext.Implicits.global
       val entity: TestInstantVersionedEntity = executeAction(testInstantVersionedEntityRepository.save(TestInstantVersionedEntity(Option(1), 2, None)))
       val readEntity = executeAction(testInstantVersionedEntityRepository.findOne(entity.id.get)).get
-      readEntity.version.get should equal(Instant.parse("2016-01-03T01:01:02Z"))
+      readEntity.version.get.instant should equal(Instant.parse("2016-01-03T01:01:02.123Z"))
 
       val updatedEntity = executeAction(testInstantVersionedEntityRepository.update(readEntity.copy(price = 3)))
-      updatedEntity.version.get should equal(Instant.parse("2016-01-04T01:01:05Z"))
+      updatedEntity.version.get.instant should equal(Instant.parse("2016-01-04T01:01:05.456Z"))
 
       executeAction(testInstantVersionedEntityRepository.update(readEntity.copy(price = 4)))
     }
-    exception.getMessage should equal("Failed to update entity of type com.byteslounge.slickrepo.repository.TestInstantVersionedEntity. Expected version was not found: 2016-01-03T01:01:02Z")
+    exception.getMessage should equal("Failed to update entity of type com.byteslounge.slickrepo.repository.TestInstantVersionedEntity. Expected version was not found: 2016-01-03T01:01:02.123Z")
   }
 
   it should "perform a batch insert of instant versioned entities" in {
@@ -88,10 +88,10 @@ abstract class InstantVersionedRepositoryTest(override val config: Config) exten
     val entity2: TestInstantVersionedEntity = executeAction(testInstantVersionedEntityRepository.findOne(2)).get
     val entity3: TestInstantVersionedEntity = executeAction(testInstantVersionedEntityRepository.findOne(3)).get
     entity1.price should equal(2.2)
-    entity1.version.get should equal(Instant.parse("2016-01-03T01:01:02Z"))
+    entity1.version.get.instant should equal(Instant.parse("2016-01-03T01:01:02.123Z"))
     entity2.price should equal(3.3)
-    entity2.version.get should equal(Instant.parse("2016-01-04T01:01:05Z"))
+    entity2.version.get.instant should equal(Instant.parse("2016-01-04T01:01:05.456Z"))
     entity3.price should equal(4.4)
-    entity3.version.get should equal(Instant.parse("2016-01-05T01:01:07Z"))
+    entity3.version.get.instant should equal(Instant.parse("2016-01-05T01:01:07.789Z"))
   }
 }

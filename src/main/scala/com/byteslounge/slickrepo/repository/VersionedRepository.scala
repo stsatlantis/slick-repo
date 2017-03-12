@@ -29,10 +29,9 @@ import java.time.Instant
 
 import com.byteslounge.slickrepo.exception.OptimisticLockException
 import com.byteslounge.slickrepo.meta.{Versioned, VersionedEntity}
-import com.byteslounge.slickrepo.version.VersionGenerator
+import com.byteslounge.slickrepo.scalaversion.{JdbcProfile, RelationalProfile}
+import com.byteslounge.slickrepo.version.{InstantVersion, VersionGenerator}
 import slick.ast.BaseTypedType
-import com.byteslounge.slickrepo.scalaversion.JdbcProfile
-import com.byteslounge.slickrepo.scalaversion.RelationalProfile
 import slick.jdbc.JdbcType
 
 import scala.concurrent.ExecutionContext
@@ -124,7 +123,7 @@ abstract class VersionedRepository[T <: VersionedEntity[T, ID, V], ID, V : Versi
 
   lazy private val findOneVersionedCompiled = Compiled((id: Rep[ID], version: Rep[V]) => tableQuery.filter(_.id === id).filter(_.version === version))
 
-  implicit val instantToSqlTimestampMapper: JdbcType[Instant] with BaseTypedType[Instant] = MappedColumnType.base[Instant, Timestamp](
-    { instant => new java.sql.Timestamp(instant.toEpochMilli) },
-    { sqlTimestamp => Instant.ofEpochMilli(sqlTimestamp.getTime) })
+  implicit val instantToSqlTimestampMapper: JdbcType[InstantVersion] with BaseTypedType[InstantVersion] = MappedColumnType.base[InstantVersion, Timestamp](
+    { instantVersion => new java.sql.Timestamp(instantVersion.instant.toEpochMilli) },
+    { sqlTimestamp => InstantVersion(Instant.ofEpochMilli(sqlTimestamp.getTime)) })
 }

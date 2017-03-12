@@ -29,12 +29,12 @@ import java.time.Instant
 import com.byteslounge.slickrepo.datetime.MockDateTimeHelper
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 
-class VersionHelperTest extends FlatSpec with Matchers with BeforeAndAfter {
+class VersionGeneratorTest extends FlatSpec with Matchers with BeforeAndAfter {
 
   before {
     MockDateTimeHelper.start()
     MockDateTimeHelper.mock(
-      Instant.parse("2016-01-03T01:01:02Z")
+      Instant.parse("2016-01-03T01:01:02.776Z")
     )
   }
 
@@ -55,11 +55,11 @@ class VersionHelperTest extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   "The Instant Version Generator" should "generate the instant initial value" in {
-    VersionGenerator.instantVersionGenerator.initialVersion() should equal(Instant.parse("2016-01-03T01:01:02Z"))
+    VersionGenerator.instantVersionGenerator.initialVersion() should equal(InstantVersion(Instant.parse("2016-01-03T01:01:02.776Z")))
   }
 
   it should "generate the next instant value" in {
-    VersionGenerator.instantVersionGenerator.nextVersion(Instant.parse("2016-01-03T01:01:02Z")) should equal(Instant.parse("2016-01-03T01:01:02Z"))
+    VersionGenerator.instantVersionGenerator.nextVersion(InstantVersion(Instant.parse("2016-01-01T01:00:02.112Z"))) should equal(InstantVersion(Instant.parse("2016-01-03T01:01:02.776Z")))
   }
 
 }
